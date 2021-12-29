@@ -12,12 +12,15 @@ builder.Services
           .AddQueryType()
           .AddTypeExtension<AuthorQueries>()
           .AddTypeExtension<PostQueries>()
+          .AddTypeExtension<TagQueries>()
           .AddType<AuthorType>()
           .AddType<PostType>()
+          .AddType<TagType>()
           .RegisterDbContext<BlogDbContext>()
           .AddDataLoader<AuthorByIdDataLoader>()
           .AddDataLoader<PostByIdDataLoader>()
           .AddDataLoader<PostsByAuthorIdDataLoader>()
+          .AddDataLoader<PostsByTagIdDataLoader>()
           .AddGlobalObjectIdentification();
 
 var app = builder.Build();

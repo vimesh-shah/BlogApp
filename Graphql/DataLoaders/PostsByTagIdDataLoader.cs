@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlogApp.Graphql.DataLoaders;
 
-public class PostsByAuthorIdDataLoader : GroupedDataLoader<int, Post>
+public class PostsByTagIdDataLoader : GroupedDataLoader<int, Post>
 {
     private readonly IDbContextFactory<BlogDbContext> _dbContextFactory;
 
-    public PostsByAuthorIdDataLoader(
+    public PostsByTagIdDataLoader(
         IBatchScheduler batchScheduler,
         IDbContextFactory<BlogDbContext> dbContextFactory,
         DataLoaderOptions? options = null)
@@ -23,12 +23,13 @@ public class PostsByAuthorIdDataLoader : GroupedDataLoader<int, Post>
     {
         using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
 
-        var posts = await dbContext.Posts
+        var posts = await dbContext.PostTags
                                         .AsNoTracking()
-                                        .Where(x => keys.Contains(x.AuthorId))
+                                        .Include(x => x.Post)
+                                        .Where(x => keys.Contains(x.TagId))
                                         .ToListAsync(cancellationToken);
 
-        var lookup = posts.ToLookup(x => x.AuthorId, x => x);
+        var lookup = posts.ToLookup(x => x.TagId, x => x.Post);
 
         return lookup;
     }

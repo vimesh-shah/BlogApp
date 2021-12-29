@@ -1,22 +1,13 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlogApp.Entities;
 
-public class Tag : BaseEntity, IEntityTypeConfiguration<Tag>
+public class Tag : BaseEntity
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = default!;
 
-    public IEnumerable<Post> Posts { get; set; }
+    [NotMapped]
+    public IEnumerable<Post> Posts { get; set; } = default!;
 
-    public void Configure(EntityTypeBuilder<Tag> builder)
-    {
-        builder
-            .HasIndex()
-            .IsUnique();
-
-        builder
-            .HasMany(t => t.Posts)
-            .WithMany(p => p.Tags);
-    }
+    public IEnumerable<PostTag> PostTags { get; set; } = default!;
 }

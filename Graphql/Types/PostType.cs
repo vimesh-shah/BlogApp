@@ -19,5 +19,21 @@ public class PostType : ObjectType<Post>
                 var parent = context.Parent<Post>();
                 return context.DataLoader<AuthorByIdDataLoader>().LoadAsync(parent.AuthorId, context.RequestAborted);
             });
+
+        descriptor
+            .Field(x => x.Tags)
+            .Resolve((context) =>
+            {
+                var parent = context.Parent<Post>();
+                return context.DataLoader<TagsByPostIdDataLoader>().LoadAsync(parent.Id, context.RequestAborted);
+            });
+
+        descriptor
+            .Field(x => x.PostTags)
+            .Ignore();
+
+        descriptor
+            .Field(x => x.AuthorId)
+            .Ignore();
     }
 }

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogApp.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    [Migration("20211218065550_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20211229162800_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -57,6 +57,27 @@ namespace BlogApp.Migrations
                     b.ToTable("Posts");
                 });
 
+            modelBuilder.Entity("BlogApp.Entities.PostTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("PostTags");
+                });
+
             modelBuilder.Entity("BlogApp.Entities.Tag", b =>
                 {
                     b.Property<int>("Id")
@@ -72,21 +93,6 @@ namespace BlogApp.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("PostTag", b =>
-                {
-                    b.Property<int>("PostsId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TagsId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("PostsId", "TagsId");
-
-                    b.HasIndex("TagsId");
-
-                    b.ToTable("PostTag");
-                });
-
             modelBuilder.Entity("BlogApp.Entities.Post", b =>
                 {
                     b.HasOne("BlogApp.Entities.Author", "Author")
@@ -98,24 +104,38 @@ namespace BlogApp.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("PostTag", b =>
+            modelBuilder.Entity("BlogApp.Entities.PostTag", b =>
                 {
-                    b.HasOne("BlogApp.Entities.Post", null)
-                        .WithMany()
-                        .HasForeignKey("PostsId")
+                    b.HasOne("BlogApp.Entities.Post", "Post")
+                        .WithMany("PostTags")
+                        .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BlogApp.Entities.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
+                    b.HasOne("BlogApp.Entities.Tag", "Tag")
+                        .WithMany("PostTags")
+                        .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("BlogApp.Entities.Author", b =>
                 {
                     b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("BlogApp.Entities.Post", b =>
+                {
+                    b.Navigation("PostTags");
+                });
+
+            modelBuilder.Entity("BlogApp.Entities.Tag", b =>
+                {
+                    b.Navigation("PostTags");
                 });
 #pragma warning restore 612, 618
         }
